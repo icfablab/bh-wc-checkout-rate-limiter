@@ -4,7 +4,10 @@
 
 Rate limit "Place Order" on WooCommerce checkout.
 
-Rate limits `/?wc-ajax=checkout` by IP.
+Rate limits `/?wc-ajax=checkout` by user id.
+
+This is a fork of https://github.com/BrianHenryIE/bh-wc-checkout-rate-limiter
+and we have modified it to use user id for Woocommerce installs that disable guest checkout.
 
 ## Install
 

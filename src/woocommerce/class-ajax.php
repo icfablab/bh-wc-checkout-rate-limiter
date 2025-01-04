@@ -71,20 +71,20 @@ class Ajax {
 			return;
 		}
 
-		$ip_address = \WC_Geolocation::get_ip_address();
+		$user_id = get_current_user_id();
 
 		$block = false;
 
 		foreach ( $limits as $interval => $allowed_access_count ) {
 
-			$this->logger->debug( "Checking {$ip_address} rate limit {$allowed_access_count} per {$interval} seconds." );
+			$this->logger->debug( "Checking {$user_id} rate limit {$allowed_access_count} per {$interval} seconds." );
 
 			$rate = Rate::custom( $allowed_access_count, $interval );
 
 			$rate_limiter = new WordPress_Rate_Limiter( $rate, 'checkout' );
 
 			try {
-				$status = $rate_limiter->limitSilently( $ip_address );
+				$status = $rate_limiter->limitSilently( $user_id );
 			} catch ( \RuntimeException $e ) {
 				$this->logger->error(
 					'Rate Limiter encountered an error when storing the access count.',
@@ -104,12 +104,12 @@ class Ajax {
 			if ( $status->limitExceeded() ) {
 
 				$this->logger->notice(
-					"{$ip_address} blocked with {$status->getRemainingAttempts()} remaining attempts for rate limit {$allowed_access_count} per {$interval} seconds.",
+					"{$user_id} blocked with {$status->getRemainingAttempts()} remaining attempts for rate limit {$allowed_access_count} per {$interval} seconds.",
 					array(
 						'interval'             => $interval,
 						'allowed_access_count' => $allowed_access_count,
 						'status'               => $status,
-						'ip_address'           => $ip_address,
+						'user_id'              => $user_id,
 					)
 				);
 
@@ -117,7 +117,7 @@ class Ajax {
 			} else {
 
 				$this->logger->debug(
-					"{$ip_address} allowed with {$status->getRemainingAttempts()} remaining attempts for rate limit {$allowed_access_count} per {$interval} seconds.",
+					"{$user_id} allowed with {$status->getRemainingAttempts()} remaining attempts for rate limit {$allowed_access_count} per {$interval} seconds.",
 					array(
 						'interval'             => $interval,
 						'allowed_access_count' => $allowed_access_count,
